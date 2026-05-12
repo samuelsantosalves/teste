@@ -1,0 +1,2143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ModeLar — Painel de Acessibilidade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+
+<style>
+/* ═══════════════════════════════════════════════
+   DESIGN TOKENS — ModeLar Brand System
+   ═══════════════════════════════════════════════ */
+:root {
+  /* Brand */
+  --brand-teal:       #1d6b65;
+  --brand-teal-dim:   #0f3d39;
+  --brand-teal-glow:  #2d9b92;
+  --brand-gold:       #c9a84c;
+  --brand-gold-soft:  #dfc07e;
+  --brand-gold-dim:   rgba(201,168,76,0.12);
+
+  /* Dark Surface System */
+  --bg:         #0b0f0e;
+  --surface-0:  #111615;
+  --surface-1:  #171e1c;
+  --surface-2:  #1e2826;
+  --surface-3:  #253330;
+
+  /* Text */
+  --text-primary:   #e8f0ee;
+  --text-secondary: #8fa8a3;
+  --text-muted:     #516862;
+
+  /* Borders */
+  --border-subtle: rgba(45,155,146,0.08);
+  --border-default: rgba(45,155,146,0.16);
+  --border-strong: rgba(45,155,146,0.28);
+
+  /* Semantic */
+  --danger:  #e05252;
+  --warning: #d4a017;
+  --success: #3dba8f;
+  --info:    #4a9fd4;
+
+  /* Radius */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 18px;
+
+  /* Transitions */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
+}
+
+/* ═══════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Noise texture overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.6;
+}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR
+   ═══════════════════════════════════════════════ */
+.sidebar {
+  width: 248px;
+  min-height: 100vh;
+  background: var(--surface-0);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 100;
+}
+
+/* ── Logo ── */
+.logo-area {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.logo-svg { width: 44px; height: 44px; flex-shrink: 0; }
+
+.logo-copy { display: flex; flex-direction: column; }
+
+.logo-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.4px;
+  line-height: 1.1;
+}
+
+.logo-name em {
+  font-style: normal;
+  color: var(--brand-gold);
+}
+
+.logo-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* ── Nav ── */
+nav { padding: 14px 10px; flex: 1; overflow-y: auto; }
+
+.nav-group-label {
+  font-size: 9.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 12px 12px 5px;
+  font-weight: 500;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--text-secondary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13.5px;
+  font-weight: 400;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.17s var(--ease);
+  margin-bottom: 1px;
+  position: relative;
+}
+
+.nav-btn i { font-size: 16px; flex-shrink: 0; }
+
+.nav-btn:hover {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.nav-btn.active {
+  background: linear-gradient(90deg, rgba(201,168,76,0.1), rgba(201,168,76,0.04));
+  color: var(--brand-gold-soft);
+  border-left: 2px solid var(--brand-gold);
+  padding-left: 10px;
+}
+
+.nav-btn.active i { color: var(--brand-gold); }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  animation: badge-pulse 2s infinite;
+}
+
+@keyframes badge-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(224,82,82,0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(224,82,82,0); }
+}
+
+.sidebar-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 10.5px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN CONTENT
+   ═══════════════════════════════════════════════ */
+.main {
+  margin-left: 248px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── Topbar ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  background: var(--surface-0);
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(12px);
+}
+
+.page-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: 0.2px;
+}
+
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+
+.alert-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(224,82,82,0.08);
+  border: 1px solid rgba(224,82,82,0.2);
+  color: var(--danger);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.15s;
+  white-space: nowrap;
+}
+
+.alert-chip:hover { background: rgba(224,82,82,0.14); }
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border-default);
+  background: none;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.15s;
+}
+
+.icon-btn:hover { background: var(--surface-2); color: var(--text-primary); }
+
+/* ── Content area ── */
+.content { padding: 28px 32px; flex: 1; }
+
+.section { display: none; animation: fade-in 0.22s var(--ease); }
+.section.active { display: block; }
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════════
+   STAT CARDS
+   ═══════════════════════════════════════════════ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.18s;
+}
+
+.stat-card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--brand-teal), var(--brand-teal-glow));
+  opacity: 0.6;
+}
+
+.stat-card.gold::after {
+  background: linear-gradient(90deg, var(--brand-gold), var(--brand-gold-soft));
+}
+
+.stat-card.danger::after {
+  background: linear-gradient(90deg, var(--danger), #f07070);
+}
+
+.stat-icon {
+  width: 38px; height: 38px;
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  margin-bottom: 14px;
+  background: rgba(45,155,146,0.1);
+  color: var(--brand-teal-glow);
+}
+
+.stat-card.gold .stat-icon { background: var(--brand-gold-dim); color: var(--brand-gold); }
+.stat-card.danger .stat-icon { background: rgba(224,82,82,0.1); color: var(--danger); }
+
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 5px;
+  letter-spacing: 0.2px;
+}
+
+/* ═══════════════════════════════════════════════
+   CARDS
+   ═══════════════════════════════════════════════ */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: 22px 24px;
+  transition: border-color 0.2s;
+}
+
+.card:hover { border-color: var(--border-default); }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.card-meta { font-size: 12px; color: var(--text-muted); }
+
+.text-link {
+  font-size: 12px;
+  color: var(--brand-teal-glow);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.text-link:hover { color: var(--brand-gold); }
+
+/* ═══════════════════════════════════════════════
+   SKELETON LOADERS
+   ═══════════════════════════════════════════════ */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 25%,
+    var(--surface-3) 50%,
+    var(--surface-2) 75%
+  );
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: var(--r-sm);
+}
+
+.skeleton-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: 18px;
+}
+
+.sk-icon { width: 42px; height: 42px; border-radius: var(--r-sm); margin-bottom: 12px; }
+.sk-line { height: 10px; margin-bottom: 8px; }
+.sk-line.w-full { width: 100%; }
+.sk-line.w-3of4 { width: 75%; }
+.sk-line.w-half { width: 50%; }
+.sk-line.w-1of3 { width: 33%; }
+.sk-line.tall { height: 22px; margin-bottom: 10px; }
+
+/* ═══════════════════════════════════════════════
+   DEVICE GRID
+   ═══════════════════════════════════════════════ */
+.device-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+  gap: 14px;
+}
+
+.device-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: 18px;
+  transition: all 0.2s var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+
+.device-card::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--brand-teal), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.device-card:hover::before { opacity: 1; }
+
+.device-card.state-on {
+  border-color: rgba(45,155,146,0.25);
+  background: linear-gradient(135deg, var(--surface-2), rgba(29,107,101,0.08));
+}
+
+.device-card.state-alert {
+  border-color: rgba(201,168,76,0.4);
+  background: linear-gradient(135deg, var(--surface-2), rgba(201,168,76,0.06));
+  animation: alert-glow 1.5s ease infinite;
+}
+
+@keyframes alert-glow {
+  0%,100% { box-shadow: 0 0 0 0 rgba(201,168,76,0); }
+  50% { box-shadow: 0 0 0 4px rgba(201,168,76,0.1), 0 0 18px rgba(201,168,76,0.06); }
+}
+
+.device-icon-box {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 21px;
+  margin-bottom: 13px;
+  transition: 0.2s;
+}
+
+.device-name { font-size: 13.5px; font-weight: 500; color: var(--text-primary); margin-bottom: 3px; }
+.device-room { font-size: 11.5px; color: var(--text-muted); margin-bottom: 12px; }
+.device-status { font-size: 11px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; }
+
+/* ── Toggle ── */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+
+.switch { position: relative; width: 38px; height: 22px; cursor: pointer; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+
+.sw-track {
+  position: absolute;
+  inset: 0;
+  background: var(--surface-3);
+  border-radius: 11px;
+  border: 1px solid var(--border-default);
+  transition: 0.22s var(--ease);
+}
+
+.sw-track::before {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  top: 2px; left: 2px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  transition: 0.22s var(--ease);
+}
+
+.switch input:checked ~ .sw-track {
+  background: var(--brand-teal);
+  border-color: var(--brand-teal);
+}
+
+.switch input:checked ~ .sw-track::before {
+  transform: translateX(16px);
+  background: white;
+}
+
+.switch:focus-within .sw-track {
+  outline: 2px solid var(--brand-teal-glow);
+  outline-offset: 2px;
+}
+
+/* ── Brightness slider ── */
+.brightness-row { display: flex; align-items: center; gap: 7px; margin-top: 8px; }
+
+.brightness-row input[type="range"] {
+  -webkit-appearance: none;
+  flex: 1;
+  height: 3px;
+  background: var(--surface-3);
+  border-radius: 2px;
+  outline: none;
+}
+
+.brightness-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  background: var(--brand-teal);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--brand-teal);
+  transition: transform 0.15s;
+}
+
+.brightness-row input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.2);
+}
+
+.brightness-val {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  min-width: 30px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ═══════════════════════════════════════════════
+   LOG ITEMS
+   ═══════════════════════════════════════════════ */
+.log-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  transition: opacity 0.2s;
+}
+.log-row:last-child { border-bottom: none; }
+.log-row.seen { opacity: 0.4; }
+
+.log-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.log-info { flex: 1; min-width: 0; }
+.log-desc { font-size: 13.5px; color: var(--text-primary); }
+.log-time { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+.prio-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.prio-5 { background: rgba(224,82,82,0.14); color: var(--danger); }
+.prio-4 { background: rgba(212,160,23,0.14); color: var(--warning); }
+.prio-3 { background: rgba(45,155,146,0.14); color: var(--brand-teal-glow); }
+.prio-2 { background: rgba(61,186,143,0.12); color: var(--success); }
+.prio-1 { background: rgba(81,104,98,0.2); color: var(--text-muted); }
+
+/* ═══════════════════════════════════════════════
+   MAPPING LIST
+   ═══════════════════════════════════════════════ */
+.map-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 13px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-sm);
+  margin-bottom: 8px;
+  transition: border-color 0.15s;
+}
+.map-row:hover { border-color: var(--border-strong); }
+
+.color-gem {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.color-gem::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.18);
+}
+
+.map-info { flex: 1; min-width: 0; }
+.map-event { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.map-device { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.pattern-badge {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--brand-teal-glow);
+  background: rgba(45,155,146,0.12);
+  padding: 2px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════
+   SIMULATE
+   ═══════════════════════════════════════════════ */
+.event-btn {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-sm);
+  padding: 13px 16px;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13.5px;
+  text-align: left;
+  transition: all 0.17s var(--ease);
+  margin-bottom: 8px;
+}
+
+.event-btn:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-3);
+  transform: translateX(2px);
+}
+
+.event-btn:active { transform: translateX(1px) scale(0.99); }
+
+.prio-pip {
+  width: 10px; height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════
+   SENSORS
+   ═══════════════════════════════════════════════ */
+.sensor-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-sm);
+  margin-bottom: 8px;
+}
+
+.sensor-ico { font-size: 20px; color: var(--brand-teal-glow); }
+.sensor-info { flex: 1; }
+.sensor-type { font-size: 13.5px; font-weight: 500; }
+.sensor-loc { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+
+.online-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 7px var(--success);
+  animation: online-pulse 2.5s ease infinite;
+}
+
+@keyframes online-pulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ═══════════════════════════════════════════════
+   COMMANDS
+   ═══════════════════════════════════════════════ */
+.cmd-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 8px;
+}
+
+.cmd-row:hover { border-color: var(--brand-teal); background: var(--surface-3); }
+.cmd-phrase { font-style: italic; font-size: 13.5px; color: var(--brand-teal-glow); font-weight: 500; }
+.cmd-action { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-family: monospace; }
+
+/* ═══════════════════════════════════════════════
+   PROFILE CARDS
+   ═══════════════════════════════════════════════ */
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  transition: border-color 0.15s;
+}
+.profile-card:hover { border-color: var(--border-strong); }
+
+.profile-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(29,107,101,0.2);
+  border: 2px solid var(--border-strong);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--brand-teal-glow);
+  flex-shrink: 0;
+}
+
+.profile-name { font-size: 14px; font-weight: 500; }
+.profile-detail { font-size: 12px; color: var(--text-muted); margin-top: 3px; display: flex; align-items: center; gap: 6px; }
+.profile-swatch { width: 11px; height: 11px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.15); }
+
+/* ═══════════════════════════════════════════════
+   FORMS
+   ═══════════════════════════════════════════════ */
+.form-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+
+.form-field label {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.form-field select,
+.form-field input[type="text"],
+.form-field input[type="number"] {
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-sm);
+  color: var(--text-primary);
+  padding: 9px 13px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13.5px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-appearance: none;
+  outline: none;
+}
+
+.form-field select:focus,
+.form-field input[type="text"]:focus,
+.form-field input[type="number"]:focus {
+  border-color: var(--brand-teal);
+  box-shadow: 0 0 0 3px rgba(29,107,101,0.15);
+}
+
+.form-field select option { background: var(--surface-2); }
+
+.form-field input[type="color"] {
+  width: 44px; height: 36px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-sm);
+  padding: 3px;
+  cursor: pointer;
+  background: var(--surface-2);
+}
+
+.form-field input[type="range"] {
+  -webkit-appearance: none;
+  background: var(--surface-3);
+  height: 4px;
+  border-radius: 2px;
+  width: 100%;
+  outline: none;
+}
+
+.form-field input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  background: var(--brand-teal);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--brand-teal);
+}
+
+.form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  border-radius: var(--r-sm);
+  padding: 9px 18px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.17s var(--ease);
+  letter-spacing: 0.2px;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-primary { background: var(--brand-teal); color: white; }
+.btn-primary:hover { background: var(--brand-teal-glow); box-shadow: 0 0 20px rgba(29,107,101,0.3); }
+
+.btn-gold { background: var(--brand-gold); color: var(--bg); font-weight: 600; }
+.btn-gold:hover { background: var(--brand-gold-soft); box-shadow: 0 0 20px rgba(201,168,76,0.3); }
+
+.btn-ghost {
+  background: none;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+.btn-ghost:hover { background: var(--surface-2); color: var(--text-primary); border-color: var(--border-strong); }
+
+.btn-danger-ghost {
+  background: none;
+  color: var(--text-muted);
+  border: none;
+  padding: 5px;
+  border-radius: var(--r-xs);
+}
+.btn-danger-ghost:hover { background: rgba(224,82,82,0.1); color: var(--danger); }
+
+/* ── Input row ── */
+.input-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.input-row input { flex: 1; }
+
+/* ═══════════════════════════════════════════════
+   RESULT CALLOUT
+   ═══════════════════════════════════════════════ */
+.callout {
+  border-radius: var(--r-sm);
+  padding: 14px 16px;
+  font-size: 13px;
+  border-left: 3px solid;
+  margin-top: 8px;
+}
+
+.callout.success { background: rgba(61,186,143,0.07); border-color: var(--success); }
+.callout.error   { background: rgba(224,82,82,0.07); border-color: var(--danger); }
+.callout.info    { background: rgba(45,155,146,0.07); border-color: var(--brand-teal); }
+
+/* ═══════════════════════════════════════════════
+   SECTION HEADER
+   ═══════════════════════════════════════════════ */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.section-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-gem {
+  width: 8px; height: 10px;
+  background: var(--brand-gold);
+  clip-path: polygon(50% 0%,100% 35%,100% 65%,50% 100%,0% 65%,0% 35%);
+}
+.section-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  color: var(--text-secondary);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+/* ── Scrollable area ── */
+.scroll-area { max-height: 400px; overflow-y: auto; padding-right: 2px; }
+.scroll-area::-webkit-scrollbar { width: 3px; }
+.scroll-area::-webkit-scrollbar-track { background: transparent; }
+.scroll-area::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 2px; }
+
+/* ── Divider ── */
+.divider { height: 1px; background: var(--border-subtle); margin: 16px 0; }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 28px;
+  font-size: 13px;
+}
+
+/* ═══════════════════════════════════════════════
+   TOAST NOTIFICATION SYSTEM
+   ═══════════════════════════════════════════════ */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-md);
+  padding: 13px 18px;
+  min-width: 260px;
+  max-width: 340px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  pointer-events: all;
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform 0.3s var(--ease-spring), opacity 0.25s var(--ease);
+}
+
+.toast.enter { transform: translateX(0); opacity: 1; }
+.toast.leave { transform: translateX(120%); opacity: 0; }
+
+.toast-icon { font-size: 18px; flex-shrink: 0; }
+.toast-body { flex: 1; }
+.toast-title { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.toast-sub   { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+
+.toast.success { border-left: 3px solid var(--success); }
+.toast.success .toast-icon { color: var(--success); }
+.toast.error   { border-left: 3px solid var(--danger); }
+.toast.error   .toast-icon { color: var(--danger); }
+.toast.warning { border-left: 3px solid var(--warning); }
+.toast.warning .toast-icon { color: var(--warning); }
+.toast.info    { border-left: 3px solid var(--info); }
+.toast.info    .toast-icon { color: var(--info); }
+
+/* ═══════════════════════════════════════════════
+   ALERT NOTIFICATION PANEL
+   ═══════════════════════════════════════════════ */
+#alert-notif {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 9990;
+  background: var(--surface-1);
+  border: 1px solid var(--border-default);
+  border-top: 3px solid var(--brand-gold);
+  border-radius: var(--r-lg);
+  padding: 18px 22px;
+  max-width: 320px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  transform: translateX(380px);
+  opacity: 0;
+  transition: transform 0.38s var(--ease-spring), opacity 0.25s;
+}
+
+#alert-notif.show { transform: translateX(0); opacity: 1; }
+
+.notif-head { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+.notif-event-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+.notif-sub { font-size: 12px; color: var(--text-muted); }
+.notif-devices { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.dev-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.chip-gem { width: 8px; height: 8px; border-radius: 3px; }
+
+/* ── Focus outline for accessibility ── */
+:focus-visible {
+  outline: 2px solid var(--brand-teal-glow);
+  outline-offset: 2px;
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════
+     SIDEBAR
+     ════════════════════════════════ -->
+<aside class="sidebar" role="navigation" aria-label="Navegação principal">
+  <div class="logo-area">
+    <svg class="logo-svg" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="1" y="1" width="42" height="42" rx="5" stroke="rgba(45,155,146,0.2)" stroke-width="1"/>
+      <!-- M top half -->
+      <path d="M7 7 L7 22 L22 15 L37 22 L37 7" stroke="#2d9b92" stroke-width="2.8" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      <!-- M bottom half -->
+      <path d="M7 37 L7 22 L22 29 L37 22 L37 37" stroke="#2d9b92" stroke-width="2.8" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      <!-- Left spine -->
+      <line x1="7" y1="7" x2="7" y2="37" stroke="#2d9b92" stroke-width="2.8" stroke-linecap="round"/>
+      <!-- Right spine -->
+      <line x1="37" y1="7" x2="37" y2="37" stroke="#2d9b92" stroke-width="2.8" stroke-linecap="round"/>
+      <!-- Gold gem center -->
+      <ellipse cx="22" cy="22" rx="4.5" ry="5.5" fill="url(#gem-grad)"/>
+      <ellipse cx="21.5" cy="21" rx="2" ry="2.5" fill="rgba(255,255,255,0.25)"/>
+      <defs>
+        <radialGradient id="gem-grad" cx="40%" cy="35%" r="60%">
+          <stop offset="0%" stop-color="#e8c96a"/>
+          <stop offset="60%" stop-color="#c9a84c"/>
+          <stop offset="100%" stop-color="#8a6a1a"/>
+        </radialGradient>
+      </defs>
+    </svg>
+    <div class="logo-copy">
+      <span class="logo-name">Mode<em>Lar</em></span>
+      <span class="logo-sub">Acessibilidade IoT</span>
+    </div>
+  </div>
+
+  <nav>
+    <div class="nav-group-label">Principal</div>
+    <button class="nav-btn active" data-section="dashboard" aria-current="page">
+      <i class="ti ti-layout-dashboard" aria-hidden="true"></i> Dashboard
+    </button>
+    <button class="nav-btn" data-section="devices">
+      <i class="ti ti-bulb" aria-hidden="true"></i> Dispositivos
+    </button>
+
+    <div class="nav-group-label">Configuração</div>
+    <button class="nav-btn" data-section="mappings">
+      <i class="ti ti-map-2" aria-hidden="true"></i> Mapeamentos
+    </button>
+    <button class="nav-btn" data-section="simulate">
+      <i class="ti ti-player-play" aria-hidden="true"></i> Simular Evento
+    </button>
+    <button class="nav-btn" data-section="sensors">
+      <i class="ti ti-radar" aria-hidden="true"></i> Sensores
+    </button>
+    <button class="nav-btn" data-section="commands">
+      <i class="ti ti-microphone" aria-hidden="true"></i> Comandos
+    </button>
+
+    <div class="nav-group-label">Gestão</div>
+    <button class="nav-btn" data-section="logs">
+      <i class="ti ti-bell" aria-hidden="true"></i> Histórico
+      <span class="nav-badge" id="nav-badge" style="display:none" aria-live="polite">0</span>
+    </button>
+    <button class="nav-btn" data-section="profiles">
+      <i class="ti ti-user" aria-hidden="true"></i> Perfis
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <i class="ti ti-school" aria-hidden="true"></i> CESAR School · GTI 3º Período
+  </div>
+</aside>
+
+<!-- ════════════════════════════════
+     MAIN
+     ════════════════════════════════ -->
+<div class="main" role="main">
+  <!-- Topbar -->
+  <header class="topbar">
+    <h1 class="page-heading" id="page-heading">Dashboard</h1>
+    <div class="topbar-actions">
+      <button class="alert-chip" id="alert-chip" aria-label="Ver alertas pendentes">
+        <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+        <span id="alert-chip-text">0 alertas</span>
+      </button>
+      <button class="icon-btn" id="refresh-btn" title="Atualizar" aria-label="Atualizar dados">
+        <i class="ti ti-refresh" aria-hidden="true"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- ── DASHBOARD ── -->
+    <section class="section active" id="sec-dashboard" aria-labelledby="page-heading">
+      <div class="stats-grid" id="stats-grid">
+        <!-- Skeleton stats -->
+        <div class="stat-card"><div class="skeleton sk-icon"></div><div class="skeleton sk-line tall w-1of3"></div><div class="skeleton sk-line w-half"></div></div>
+        <div class="stat-card"><div class="skeleton sk-icon"></div><div class="skeleton sk-line tall w-1of3"></div><div class="skeleton sk-line w-half"></div></div>
+        <div class="stat-card gold"><div class="skeleton sk-icon"></div><div class="skeleton sk-line tall w-1of3"></div><div class="skeleton sk-line w-half"></div></div>
+        <div class="stat-card danger"><div class="skeleton sk-icon"></div><div class="skeleton sk-line tall w-1of3"></div><div class="skeleton sk-line w-half"></div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Eventos recentes</span>
+            <button class="text-link" data-goto="logs">Ver todos →</button>
+          </div>
+          <div id="dash-logs"><div class="empty-state">Carregando...</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Ambientes</span>
+          </div>
+          <div id="dash-devices"><div class="empty-state">Carregando...</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── DEVICES ── -->
+    <section class="section" id="sec-devices" aria-label="Dispositivos">
+      <div class="section-header">
+        <div class="section-title-row">
+          <div class="section-gem" aria-hidden="true"></div>
+          <span class="section-label">Dispositivos de Saída</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" id="btn-all-on"><i class="ti ti-bulb"></i> Ligar todos</button>
+          <button class="btn btn-ghost" id="btn-all-off">Desligar todos</button>
+        </div>
+      </div>
+      <div class="device-grid" id="device-grid">
+        <!-- Skeleton cards -->
+        <div class="skeleton-card"><div class="skeleton sk-icon"></div><div class="skeleton sk-line w-3of4"></div><div class="skeleton sk-line w-half"></div></div>
+        <div class="skeleton-card"><div class="skeleton sk-icon"></div><div class="skeleton sk-line w-3of4"></div><div class="skeleton sk-line w-half"></div></div>
+        <div class="skeleton-card"><div class="skeleton sk-icon"></div><div class="skeleton sk-line w-3of4"></div><div class="skeleton sk-line w-half"></div></div>
+        <div class="skeleton-card"><div class="skeleton sk-icon"></div><div class="skeleton sk-line w-3of4"></div><div class="skeleton sk-line w-half"></div></div>
+      </div>
+    </section>
+
+    <!-- ── MAPPINGS ── -->
+    <section class="section" id="sec-mappings" aria-label="Mapeamentos visuais">
+      <div class="two-col" style="align-items:start">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Mapeamentos Visuais</span>
+            <span class="card-meta" id="map-count">–</span>
+          </div>
+          <div class="scroll-area" id="map-list"><div class="empty-state">Carregando...</div></div>
+        </div>
+        <div class="card">
+          <h2 class="card-title" style="margin-bottom:18px">Novo Mapeamento</h2>
+          <div class="form-field">
+            <label for="sel-event">Evento sonoro</label>
+            <select id="sel-event"></select>
+          </div>
+          <div class="form-field">
+            <label for="sel-device">Dispositivo</label>
+            <select id="sel-device"></select>
+          </div>
+          <div class="form-2col">
+            <div class="form-field" style="margin-bottom:0">
+              <label for="pick-color">Cor do alerta</label>
+              <div style="display:flex;align-items:center;gap:8px">
+                <input type="color" id="pick-color" value="#1d6b65" />
+                <code id="color-hex" style="font-size:12px;color:var(--text-muted)">#1D6B65</code>
+              </div>
+            </div>
+            <div class="form-field" style="margin-bottom:0">
+              <label for="sel-pattern">Padrão de pisca</label>
+              <select id="sel-pattern">
+                <option value="lento">Lento</option>
+                <option value="medio">Médio</option>
+                <option value="rapido">Rápido</option>
+                <option value="SOS">SOS</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:18px">
+            <button class="btn btn-primary" id="btn-add-map">
+              <i class="ti ti-plus" aria-hidden="true"></i> Adicionar mapeamento
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SIMULATE ── -->
+    <section class="section" id="sec-simulate" aria-label="Simular evento">
+      <div class="two-col" style="align-items:start">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Simular Evento Sonoro</span>
+          </div>
+          <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:14px">Selecione um evento para acionar os dispositivos mapeados.</p>
+          <div id="simulate-list"><div class="empty-state">Carregando...</div></div>
+        </div>
+        <div class="card" id="sim-result-card" hidden>
+          <div class="card-header">
+            <span class="card-title">Resultado</span>
+          </div>
+          <div id="sim-result"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SENSORS ── -->
+    <section class="section" id="sec-sensors" aria-label="Sensores de entrada">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Sensores de Entrada</span>
+          <span style="font-size:12px;color:var(--success);display:flex;align-items:center;gap:5px">
+            <i class="ti ti-circle-check" aria-hidden="true"></i> Todos operacionais
+          </span>
+        </div>
+        <div id="sensor-list"><div class="empty-state">Carregando...</div></div>
+      </div>
+    </section>
+
+    <!-- ── COMMANDS ── -->
+    <section class="section" id="sec-commands" aria-label="Comandos offline">
+      <div class="two-col" style="align-items:start">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Comandos Offline</span>
+          </div>
+          <div class="input-row">
+            <input type="text" id="cmd-input" placeholder="Digite uma frase de comando..." aria-label="Frase de comando" />
+            <button class="btn btn-primary" id="btn-exec-cmd">
+              <i class="ti ti-send" aria-hidden="true"></i>
+            </button>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Clique em um comando para executar:</p>
+          <div id="cmd-list"><div class="empty-state">Carregando...</div></div>
+        </div>
+        <div class="card" id="cmd-result-card" hidden>
+          <div class="card-header"><span class="card-title">Resultado</span></div>
+          <div id="cmd-result"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── LOGS ── -->
+    <section class="section" id="sec-logs" aria-label="Histórico de alertas">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Histórico de Alertas</span>
+          <button class="btn btn-ghost" id="btn-resolve-all" style="font-size:12px;padding:6px 13px">
+            <i class="ti ti-checks" aria-hidden="true"></i> Marcar todos como vistos
+          </button>
+        </div>
+        <div id="logs-list"><div class="empty-state">Carregando...</div></div>
+      </div>
+    </section>
+
+    <!-- ── PROFILES ── -->
+    <section class="section" id="sec-profiles" aria-label="Perfis de acessibilidade">
+      <div class="two-col" style="align-items:start">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Perfis de Acessibilidade</span></div>
+          <div id="profile-list"><div class="empty-state">Carregando...</div></div>
+        </div>
+        <div class="card">
+          <h2 class="card-title" style="margin-bottom:18px">Novo Perfil</h2>
+          <div class="form-field">
+            <label for="profile-name">Nome do usuário</label>
+            <input type="text" id="profile-name" placeholder="Ex: Ana (Surda)" />
+          </div>
+          <div class="form-field">
+            <label for="profile-intensity">
+              Intensidade de luz — <strong id="intensity-val" style="color:var(--brand-teal-glow)">80</strong>%
+            </label>
+            <input type="range" id="profile-intensity" min="0" max="100" value="80" />
+          </div>
+          <div class="form-field">
+            <label for="profile-color">Cor preferida de alerta</label>
+            <div style="display:flex;align-items:center;gap:10px">
+              <input type="color" id="profile-color" value="#FFFF00" />
+              <span style="font-size:12px;color:var(--text-muted)">Usada nos alertas visuais</span>
+            </div>
+          </div>
+          <button class="btn btn-gold" id="btn-create-profile">
+            <i class="ti ti-user-plus" aria-hidden="true"></i> Criar perfil
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ════════════════════════════════
+     GLOBAL UI COMPONENTS
+     ════════════════════════════════ -->
+<div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+<div id="alert-notif" role="alert" aria-hidden="true">
+  <div class="notif-head">
+    <i class="ti ti-bell-ringing" style="font-size:20px;color:var(--brand-gold)" aria-hidden="true"></i>
+    <span class="notif-event-name" id="notif-title"></span>
+  </div>
+  <div class="notif-sub" id="notif-sub"></div>
+  <div class="notif-devices" id="notif-devices"></div>
+</div>
+
+<!-- ════════════════════════════════
+     TYPESCRIPT APPLICATION
+     ════════════════════════════════ -->
+<script>
+// ─────────────────────────────────────────────────────────────────
+// ModeLar Dashboard — TypeScript-style JS (ES2022, strict patterns)
+// All types documented via JSDoc. No inline handlers in HTML.
+// ─────────────────────────────────────────────────────────────────
+
+"use strict";
+
+const API_BASE = "http://localhost:5050/api";
+
+// ══════════════════════════════════════════
+// INTERFACES (JSDoc type declarations)
+// ══════════════════════════════════════════
+
+/**
+ * @typedef {{ id_sensor: number, tipo_sensor: string, localizacao: string }} Sensor
+ * @typedef {{ id_dispositivo: number, nome: string, comodo: string, online: number, estado: string, brilho: number }} Device
+ * @typedef {{ id_evento: number, descricao: string, nivel_prioridade: number }} Event
+ * @typedef {{ id_map: number, id_evento: number, id_dispositivo: number, cor_alerta: string, padrao_pisca: string, evento_nome: string, dispositivo_nome: string }} Mapping
+ * @typedef {{ id_log: number, id_evento: number, data_hora: string, status_visto: number, descricao: string, nivel_prioridade: number }} Log
+ * @typedef {{ id_perfil: number, nome_usuario: string, intensidade_luz: number, cor_preferida: string }} Profile
+ * @typedef {{ id_comando: number, frase_comando: string, acao_executar: string }} Command
+ * @typedef {{ dispositivos_total: number, dispositivos_online: number, eventos_total: number, alertas_pendentes: number, logs_recentes: Log[] }} DashboardData
+ * @typedef {'success'|'error'|'warning'|'info'} ToastType
+ */
+
+// ══════════════════════════════════════════
+// APP STATE
+// ══════════════════════════════════════════
+const State = {
+  /** @type {Device[]} */ devices: [],
+  /** @type {Event[]} */  events: [],
+  /** @type {Mapping[]} */ mappings: [],
+  /** @type {Log[]} */    logs: [],
+  pendingAlerts: 0,
+  currentSection: "dashboard",
+};
+
+// ══════════════════════════════════════════
+// APP SERVICE — API Layer
+// ══════════════════════════════════════════
+const AppService = {
+  /**
+   * Generic fetch wrapper with error handling.
+   * @template T
+   * @param {string} path
+   * @param {string} [method]
+   * @param {unknown} [body]
+   * @returns {Promise<T|null>}
+   */
+  async request(path, method = "GET", body = null) {
+    try {
+      const opts = {
+        method,
+        headers: { "Content-Type": "application/json" },
+      };
+      if (body !== null) opts.body = JSON.stringify(body);
+      const res = await fetch(API_BASE + path, opts);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return /** @type {T} */ (await res.json());
+    } catch (err) {
+      console.error(`[AppService] ${method} ${path}:`, err);
+      ToastSystem.show("Erro de conexão com o servidor.", "error", "Backend indisponível");
+      return null;
+    }
+  },
+
+  /** @returns {Promise<DashboardData|null>} */
+  getDashboard()           { return this.request("/dashboard"); },
+  /** @returns {Promise<Device[]|null>} */
+  getDevices()             { return this.request("/dispositivos"); },
+  /** @returns {Promise<Event[]|null>} */
+  getEvents()              { return this.request("/eventos"); },
+  /** @returns {Promise<Mapping[]|null>} */
+  getMappings()            { return this.request("/mapeamentos"); },
+  /** @returns {Promise<Log[]|null>} */
+  getLogs()                { return this.request("/logs"); },
+  /** @returns {Promise<Sensor[]|null>} */
+  getSensors()             { return this.request("/sensores"); },
+  /** @returns {Promise<Command[]|null>} */
+  getCommands()            { return this.request("/comandos"); },
+  /** @returns {Promise<Profile[]|null>} */
+  getProfiles()            { return this.request("/perfis"); },
+
+  /**
+   * @param {number} id
+   * @param {Partial<Device>} data
+   */
+  updateDevice(id, data)   { return this.request(`/dispositivos/${id}`, "PUT", data); },
+
+  /** @param {{ id_evento: number, id_dispositivo: number, cor_alerta: string, padrao_pisca: string }} data */
+  createMapping(data)      { return this.request("/mapeamentos", "POST", data); },
+  /** @param {number} id */
+  deleteMapping(id)        { return this.request(`/mapeamentos/${id}`, "DELETE"); },
+
+  /** @param {number} id */
+  simulateEvent(id)        { return this.request(`/simular/${id}`, "POST"); },
+
+  /** @param {number} id */
+  resolveLog(id)           { return this.request(`/logs/${id}/resolver`, "PUT"); },
+  resolveAllLogs()         { return this.request("/logs/resolver-todos", "PUT"); },
+
+  /** @param {{ frase: string }} data */
+  runCommand(data)         { return this.request("/comandos/executar", "POST", data); },
+
+  /** @param {{ nome_usuario: string, intensidade_luz: number, cor_preferida: string }} data */
+  createProfile(data)      { return this.request("/perfis", "POST", data); },
+};
+
+// ══════════════════════════════════════════
+// TOAST NOTIFICATION SYSTEM
+// ══════════════════════════════════════════
+const ToastSystem = {
+  /** @type {HTMLElement} */
+  container: /** @type {HTMLElement} */ (document.getElementById("toast-container")),
+
+  /**
+   * @param {string} message
+   * @param {ToastType} [type]
+   * @param {string} [title]
+   * @param {number} [duration]
+   */
+  show(message, type = "info", title = "", duration = 3200) {
+    const iconMap = {
+      success: "ti-circle-check",
+      error:   "ti-alert-circle",
+      warning: "ti-alert-triangle",
+      info:    "ti-info-circle",
+    };
+
+    const el = document.createElement("div");
+    el.className = `toast ${type}`;
+    el.setAttribute("role", "status");
+    el.innerHTML = `
+      <i class="ti ${iconMap[type]} toast-icon" aria-hidden="true"></i>
+      <div class="toast-body">
+        ${title ? `<div class="toast-title">${title}</div>` : ""}
+        <div class="toast-sub">${message}</div>
+      </div>`;
+
+    this.container.appendChild(el);
+    // Force reflow then trigger animation
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => el.classList.add("enter"));
+    });
+
+    setTimeout(() => {
+      el.classList.remove("enter");
+      el.classList.add("leave");
+      el.addEventListener("transitionend", () => el.remove(), { once: true });
+    }, duration);
+  },
+};
+
+// ══════════════════════════════════════════
+// FORMATTERS
+// ══════════════════════════════════════════
+const Fmt = {
+  /**
+   * Human-readable relative time.
+   * @param {string} dtStr
+   * @returns {string}
+   */
+  timeAgo(dtStr) {
+    const d = new Date(dtStr.replace(" ", "T"));
+    const diffMs = Date.now() - d.getTime();
+    const m = Math.floor(diffMs / 60_000);
+    if (m < 1)  return "agora";
+    if (m < 60) return `${m}min atrás`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h atrás`;
+    return `${Math.floor(h / 24)}d atrás`;
+  },
+
+  /** @param {number} p */
+  prioColor(p) {
+    return ["","var(--text-muted)","var(--success)","var(--brand-teal-glow)","var(--warning)","var(--danger)"][p] ?? "var(--text-muted)";
+  },
+
+  /** @param {number} p */
+  prioLabel(p) {
+    return ["","Mínimo","Baixo","Médio","Alto","Crítico"][p] ?? String(p);
+  },
+
+  /** @param {number} p */
+  prioClass(p) {
+    return `prio-${p}`;
+  },
+
+  /**
+   * Initials from name string.
+   * @param {string} name
+   * @returns {string}
+   */
+  initials(name) {
+    return name.split(" ").map(w => w[0] ?? "").join("").slice(0, 2).toUpperCase();
+  },
+};
+
+// ══════════════════════════════════════════
+// BADGE UPDATER
+// ══════════════════════════════════════════
+/**
+ * @param {number} count
+ */
+function updateAlertBadge(count) {
+  State.pendingAlerts = count;
+  const badge = /** @type {HTMLElement} */ (document.getElementById("nav-badge"));
+  const chip  = /** @type {HTMLElement} */ (document.getElementById("alert-chip-text"));
+  badge.textContent = String(count);
+  badge.style.display = count > 0 ? "flex" : "none";
+  chip.textContent = `${count} alerta${count !== 1 ? "s" : ""}`;
+}
+
+// ══════════════════════════════════════════
+// ALERT NOTIFICATION POPUP
+// ══════════════════════════════════════════
+/**
+ * @param {string} eventName
+ * @param {Array<{dispositivo_nome: string, cor_alerta: string}>} activatedDevices
+ */
+function showAlertPopup(eventName, activatedDevices) {
+  const notif = /** @type {HTMLElement} */ (document.getElementById("alert-notif"));
+  /** @type {HTMLElement} */ (document.getElementById("notif-title")).textContent = eventName;
+  /** @type {HTMLElement} */ (document.getElementById("notif-sub")).textContent =
+    `${activatedDevices.length} dispositivo(s) acionado(s)`;
+  /** @type {HTMLElement} */ (document.getElementById("notif-devices")).innerHTML =
+    activatedDevices.slice(0, 4).map(d =>
+      `<div class="dev-chip">
+        <div class="chip-gem" style="background:${d.cor_alerta}"></div>
+        ${d.dispositivo_nome}
+      </div>`
+    ).join("");
+
+  notif.removeAttribute("aria-hidden");
+  notif.classList.add("show");
+  setTimeout(() => {
+    notif.classList.remove("show");
+    notif.setAttribute("aria-hidden", "true");
+  }, 5500);
+}
+
+// ══════════════════════════════════════════
+// SKELETON HELPERS
+// ══════════════════════════════════════════
+/** @param {string} id */
+function setSkeletonDeviceGrid(id) {
+  document.getElementById(id).innerHTML = Array(4).fill(`
+    <div class="skeleton-card">
+      <div class="skeleton sk-icon"></div>
+      <div class="skeleton sk-line w-3of4" style="margin-bottom:6px"></div>
+      <div class="skeleton sk-line w-half" style="margin-bottom:14px"></div>
+      <div class="skeleton sk-line w-full" style="height:6px"></div>
+    </div>`).join("");
+}
+
+// ══════════════════════════════════════════
+// SECTION LOADERS
+// ══════════════════════════════════════════
+
+/** Loads dashboard summary data and renders stats + mini-lists. */
+async function loadDashboard() {
+  const [dash, maps] = await Promise.all([
+    AppService.getDashboard(),
+    AppService.getMappings(),
+  ]);
+
+  if (!dash) return;
+  State.mappings = maps ?? [];
+  updateAlertBadge(dash.alertas_pendentes);
+
+  // ── Render stat cards ──
+  document.getElementById("stats-grid").innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon"><i class="ti ti-bulb" aria-hidden="true"></i></div>
+      <div class="stat-num">${dash.dispositivos_online}<span style="font-size:16px;color:var(--text-muted)">/${dash.dispositivos_total}</span></div>
+      <div class="stat-label">Dispositivos online</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="ti ti-radar" aria-hidden="true"></i></div>
+      <div class="stat-num">${dash.eventos_total}</div>
+      <div class="stat-label">Eventos configurados</div>
+    </div>
+    <div class="stat-card gold">
+      <div class="stat-icon"><i class="ti ti-map-2" aria-hidden="true"></i></div>
+      <div class="stat-num">${State.mappings.length}</div>
+      <div class="stat-label">Mapeamentos ativos</div>
+    </div>
+    <div class="stat-card danger">
+      <div class="stat-icon"><i class="ti ti-bell" aria-hidden="true"></i></div>
+      <div class="stat-num">${dash.alertas_pendentes}</div>
+      <div class="stat-label">Alertas pendentes</div>
+    </div>`;
+
+  // ── Recent logs ──
+  const logsEl = document.getElementById("dash-logs");
+  logsEl.innerHTML = dash.logs_recentes.length === 0
+    ? `<div class="empty-state">Nenhum evento registrado.</div>`
+    : dash.logs_recentes.map(l => `
+        <div class="log-row">
+          <div class="log-dot" style="background:${Fmt.prioColor(l.nivel_prioridade)}" aria-hidden="true"></div>
+          <div class="log-info">
+            <div class="log-desc">${l.descricao}</div>
+            <div class="log-time">${Fmt.timeAgo(l.data_hora)}</div>
+          </div>
+          <span class="prio-tag ${Fmt.prioClass(l.nivel_prioridade)}">${Fmt.prioLabel(l.nivel_prioridade)}</span>
+        </div>`).join("");
+
+  // ── Device status ──
+  const devs = await AppService.getDevices();
+  State.devices = devs ?? [];
+  document.getElementById("dash-devices").innerHTML = State.devices.map(d => {
+    const stateColor = d.estado === "OFF" ? "var(--text-muted)" : d.estado === "ALERTA" ? "var(--warning)" : "var(--success)";
+    return `
+      <div class="log-row">
+        <div class="log-dot" style="background:${stateColor}" aria-hidden="true"></div>
+        <div class="log-info">
+          <div class="log-desc">${d.nome}</div>
+          <div class="log-time">${d.comodo}</div>
+        </div>
+        <span class="prio-tag" style="background:rgba(81,104,98,0.15);color:${stateColor}">${d.estado}</span>
+      </div>`;
+  }).join("");
+}
+
+/** Loads and renders device control grid. */
+async function loadDevices() {
+  setSkeletonDeviceGrid("device-grid");
+  const devs = await AppService.getDevices();
+  State.devices = devs ?? [];
+  const grid = document.getElementById("device-grid");
+
+  if (!State.devices.length) {
+    grid.innerHTML = `<div class="empty-state">Nenhum dispositivo encontrado.</div>`;
+    return;
+  }
+
+  grid.innerHTML = State.devices.map(d => {
+    const isOn    = d.estado !== "OFF";
+    const isAlert = d.estado === "ALERTA";
+    const stateClass = isAlert ? "state-alert" : isOn ? "state-on" : "";
+    const iconColor = isAlert ? "var(--brand-gold)" : isOn ? "var(--brand-teal-glow)" : "var(--text-muted)";
+    const iconBg    = isAlert ? "rgba(201,168,76,0.12)" : isOn ? "rgba(45,155,146,0.12)" : "rgba(81,104,98,0.1)";
+    return `
+      <div class="device-card ${stateClass}" id="dcard-${d.id_dispositivo}">
+        <div class="device-icon-box" style="background:${iconBg};color:${iconColor}">
+          <i class="ti ti-bulb" aria-hidden="true"></i>
+        </div>
+        <div class="device-name">${d.nome}</div>
+        <div class="device-room">${d.comodo}</div>
+        <div class="device-status" style="color:${iconColor}">${d.estado}</div>
+        <div class="toggle-row">
+          <label class="switch" aria-label="Alternar ${d.nome}">
+            <input type="checkbox" data-device-id="${d.id_dispositivo}" class="device-toggle" ${isOn ? "checked" : ""} />
+            <span class="sw-track"></span>
+          </label>
+        </div>
+        <div class="brightness-row" aria-label="Brilho de ${d.nome}">
+          <i class="ti ti-sun" style="font-size:12px;color:var(--text-muted)" aria-hidden="true"></i>
+          <input type="range" min="0" max="100" value="${d.brilho}"
+            data-device-id="${d.id_dispositivo}" class="brightness-slider"
+            aria-label="Brilho ${d.brilho}%" />
+          <span class="brightness-val" id="bv-${d.id_dispositivo}">${d.brilho}%</span>
+        </div>
+      </div>`;
+  }).join("");
+
+  // Attach events to device cards
+  document.querySelectorAll(".device-toggle").forEach(el => {
+    el.addEventListener("change", async (e) => {
+      const target = /** @type {HTMLInputElement} */ (e.currentTarget);
+      const id = Number(target.dataset.deviceId);
+      const newState = target.checked ? "ON" : "OFF";
+      await AppService.updateDevice(id, { estado: newState });
+      ToastSystem.show(`${newState === "ON" ? "Ligado" : "Desligado"} com sucesso.`, "success", "Dispositivo");
+      loadDevices();
+      loadDashboard();
+    });
+  });
+
+  document.querySelectorAll(".brightness-slider").forEach(el => {
+    el.addEventListener("input", (e) => {
+      const target = /** @type {HTMLInputElement} */ (e.currentTarget);
+      const id = Number(target.dataset.deviceId);
+      /** @type {HTMLElement} */ (document.getElementById(`bv-${id}`)).textContent = `${target.value}%`;
+    });
+    el.addEventListener("change", async (e) => {
+      const target = /** @type {HTMLInputElement} */ (e.currentTarget);
+      const id = Number(target.dataset.deviceId);
+      await AppService.updateDevice(id, { brilho: Number(target.value) });
+      ToastSystem.show(`Brilho ajustado para ${target.value}%.`, "info");
+    });
+  });
+}
+
+/** Loads mappings and populates form selects. */
+async function loadMappings() {
+  const [maps, evts, devs] = await Promise.all([
+    AppService.getMappings(),
+    AppService.getEvents(),
+    AppService.getDevices(),
+  ]);
+  State.mappings = maps ?? [];
+  State.events   = evts ?? [];
+  State.devices  = devs ?? [];
+
+  document.getElementById("map-count").textContent = `${State.mappings.length} registros`;
+
+  // Render list
+  document.getElementById("map-list").innerHTML = State.mappings.length === 0
+    ? `<div class="empty-state">Nenhum mapeamento cadastrado.</div>`
+    : State.mappings.map(m => `
+        <div class="map-row">
+          <div class="color-gem" style="background:${m.cor_alerta}" aria-hidden="true"></div>
+          <div class="map-info">
+            <div class="map-event">${m.evento_nome}</div>
+            <div class="map-device">${m.dispositivo_nome}</div>
+          </div>
+          <span class="pattern-badge">${m.padrao_pisca}</span>
+          <button class="btn btn-danger-ghost del-map-btn" data-map-id="${m.id_map}" aria-label="Excluir mapeamento ${m.evento_nome}">
+            <i class="ti ti-trash" aria-hidden="true"></i>
+          </button>
+        </div>`).join("");
+
+  // Delete buttons
+  document.querySelectorAll(".del-map-btn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const target = /** @type {HTMLElement} */ (e.currentTarget);
+      const id = Number(target.dataset.mapId);
+      await AppService.deleteMapping(id);
+      ToastSystem.show("Mapeamento removido.", "success");
+      loadMappings();
+    });
+  });
+
+  // Populate selects
+  const selEvent  = /** @type {HTMLSelectElement} */ (document.getElementById("sel-event"));
+  const selDevice = /** @type {HTMLSelectElement} */ (document.getElementById("sel-device"));
+  selEvent.innerHTML  = State.events.map(e => `<option value="${e.id_evento}">${e.descricao}</option>`).join("");
+  selDevice.innerHTML = State.devices.map(d => `<option value="${d.id_dispositivo}">${d.nome} — ${d.comodo}</option>`).join("");
+}
+
+/** Loads events for simulation panel. */
+async function loadSimulate() {
+  const evts = await AppService.getEvents();
+  State.events = evts ?? [];
+  document.getElementById("simulate-list").innerHTML = State.events.length === 0
+    ? `<div class="empty-state">Nenhum evento cadastrado.</div>`
+    : State.events.map(e => `
+        <button class="event-btn" data-event-id="${e.id_evento}" aria-label="Simular: ${e.descricao}">
+          <div class="prio-pip" style="background:${Fmt.prioColor(e.nivel_prioridade)}" aria-hidden="true"></div>
+          <span style="flex:1;font-weight:500">${e.descricao}</span>
+          <span class="prio-tag ${Fmt.prioClass(e.nivel_prioridade)}">${Fmt.prioLabel(e.nivel_prioridade)}</span>
+        </button>`).join("");
+
+  document.querySelectorAll(".event-btn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const target = /** @type {HTMLElement} */ (e.currentTarget);
+      const id = Number(target.dataset.eventId);
+      const result = await AppService.simulateEvent(id);
+      if (!result) return;
+
+      const card = document.getElementById("sim-result-card");
+      card.removeAttribute("hidden");
+      document.getElementById("sim-result").innerHTML = `
+        <div style="margin-bottom:14px">
+          <div style="font-size:11px;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px">Evento disparado</div>
+          <div style="font-size:16px;font-weight:500;font-family:'Playfair Display',serif;margin-bottom:8px">${result.evento.descricao}</div>
+          <span class="prio-tag ${Fmt.prioClass(result.evento.nivel_prioridade)}">${Fmt.prioLabel(result.evento.nivel_prioridade)}</span>
+        </div>
+        <div class="divider"></div>
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px">
+          Dispositivos acionados (${result.dispositivos_ativados.length})
+        </div>
+        ${result.dispositivos_ativados.map(d => `
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div style="width:26px;height:26px;border-radius:7px;background:${d.cor_alerta};border:1px solid rgba(255,255,255,0.1);flex-shrink:0"></div>
+            <div>
+              <div style="font-size:13px;font-weight:500">${d.dispositivo_nome}</div>
+              <div style="font-size:11px;color:var(--text-muted)">Padrão: ${d.padrao_pisca}</div>
+            </div>
+          </div>`).join("")}`;
+
+      showAlertPopup(result.evento.descricao, result.dispositivos_ativados);
+      updateAlertBadge(State.pendingAlerts + 1);
+      ToastSystem.show(`Evento "${result.evento.descricao}" simulado.`, "warning", "Evento disparado");
+    });
+  });
+}
+
+/** Loads sensors. */
+async function loadSensors() {
+  const sensors = await AppService.getSensors();
+  const iconMap = {
+    "Microfone": "ti-microphone",
+    "PIR Presença": "ti-radar",
+    "Botão Campainha": "ti-bell",
+    "Sensor Fumaça": "ti-flame",
+  };
+  document.getElementById("sensor-list").innerHTML = (sensors ?? []).map(s => `
+    <div class="sensor-row">
+      <i class="ti ${iconMap[s.tipo_sensor] ?? "ti-device-analytics"} sensor-ico" aria-hidden="true"></i>
+      <div class="sensor-info">
+        <div class="sensor-type">${s.tipo_sensor}</div>
+        <div class="sensor-loc">${s.localizacao}</div>
+      </div>
+      <div class="online-dot" title="Online" aria-label="Online"></div>
+    </div>`).join("");
+}
+
+/** Loads commands. */
+async function loadCommands() {
+  const cmds = await AppService.getCommands();
+  document.getElementById("cmd-list").innerHTML = (cmds ?? []).map(c => `
+    <div class="cmd-row" data-phrase="${c.frase_comando}" role="button" tabindex="0" aria-label="Executar: ${c.frase_comando}">
+      <i class="ti ti-quote" style="color:var(--brand-teal-glow);font-size:16px" aria-hidden="true"></i>
+      <div>
+        <div class="cmd-phrase">"${c.frase_comando}"</div>
+        <div class="cmd-action">${c.acao_executar}</div>
+      </div>
+    </div>`).join("");
+
+  document.querySelectorAll(".cmd-row").forEach(row => {
+    const activate = () => {
+      const phrase = /** @type {HTMLElement} */ (row).dataset.phrase ?? "";
+      execCommand(phrase);
+    };
+    row.addEventListener("click", activate);
+    row.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") activate(); });
+  });
+}
+
+/**
+ * Execute a voice command phrase.
+ * @param {string} phrase
+ */
+async function execCommand(phrase) {
+  const input = /** @type {HTMLInputElement} */ (document.getElementById("cmd-input"));
+  input.value = phrase;
+  const result = await AppService.runCommand({ frase: phrase });
+  const card   = document.getElementById("cmd-result-card");
+  card.removeAttribute("hidden");
+  const el = document.getElementById("cmd-result");
+
+  if (result?.ok) {
+    el.innerHTML = `
+      <div class="callout success">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <i class="ti ti-circle-check" style="color:var(--success);font-size:20px" aria-hidden="true"></i>
+          <span style="font-weight:500">Executado com sucesso</span>
+        </div>
+        <div style="font-style:italic;color:var(--brand-teal-glow);margin-bottom:8px">"${phrase}"</div>
+        <code style="font-size:11px;color:var(--text-muted)">${result.acao}</code>
+      </div>`;
+    ToastSystem.show(`Comando "${phrase}" executado.`, "success");
+    loadDevices();
+  } else {
+    el.innerHTML = `
+      <div class="callout error">
+        <div style="display:flex;align-items:center;gap:8px">
+          <i class="ti ti-alert-circle" style="color:var(--danger);font-size:20px" aria-hidden="true"></i>
+          <div>
+            <div style="font-weight:500;color:var(--danger)">Comando não reconhecido</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">"${phrase}"</div>
+          </div>
+        </div>
+      </div>`;
+    ToastSystem.show(`"${phrase}" — não reconhecido.`, "error");
+  }
+}
+
+/** Loads alert logs. */
+async function loadLogs() {
+  const logs = await AppService.getLogs();
+  State.logs = logs ?? [];
+  const pending = State.logs.filter(l => !l.status_visto).length;
+  updateAlertBadge(pending);
+
+  document.getElementById("logs-list").innerHTML = State.logs.length === 0
+    ? `<div class="empty-state">Nenhum registro.</div>`
+    : State.logs.map(l => `
+        <div class="log-row ${l.status_visto ? "seen" : ""}" id="logrow-${l.id_log}">
+          <div class="log-dot" style="background:${Fmt.prioColor(l.nivel_prioridade)}" aria-hidden="true"></div>
+          <div class="log-info">
+            <div class="log-desc">${l.descricao}</div>
+            <div class="log-time">${Fmt.timeAgo(l.data_hora)}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="prio-tag ${Fmt.prioClass(l.nivel_prioridade)}">${Fmt.prioLabel(l.nivel_prioridade)}</span>
+            ${!l.status_visto
+              ? `<button class="btn btn-danger-ghost resolve-log-btn" data-log-id="${l.id_log}" aria-label="Marcar log ${l.id_log} como visto">
+                   <i class="ti ti-check" aria-hidden="true"></i>
+                 </button>`
+              : `<i class="ti ti-circle-check" style="color:var(--success);font-size:16px" aria-hidden="true"></i>`
+            }
+          </div>
+        </div>`).join("");
+
+  document.querySelectorAll(".resolve-log-btn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const target = /** @type {HTMLElement} */ (e.currentTarget);
+      const id = Number(target.dataset.logId);
+      await AppService.resolveLog(id);
+      loadLogs();
+    });
+  });
+}
+
+/** Loads profiles. */
+async function loadProfiles() {
+  const profiles = await AppService.getProfiles();
+  document.getElementById("profile-list").innerHTML = (profiles ?? []).length === 0
+    ? `<div class="empty-state">Nenhum perfil cadastrado.</div>`
+    : (profiles ?? []).map(p => `
+        <div class="profile-card">
+          <div class="profile-avatar" aria-hidden="true">${Fmt.initials(p.nome_usuario)}</div>
+          <div>
+            <div class="profile-name">${p.nome_usuario}</div>
+            <div class="profile-detail">
+              <i class="ti ti-sun" style="font-size:12px" aria-hidden="true"></i>
+              ${p.intensidade_luz}% intensidade
+              <div class="profile-swatch" style="background:${p.cor_preferida}" aria-label="Cor preferida ${p.cor_preferida}"></div>
+              ${p.cor_preferida}
+            </div>
+          </div>
+        </div>`).join("");
+}
+
+// ══════════════════════════════════════════
+// SECTION REGISTRY
+// ══════════════════════════════════════════
+
+/** @type {Record<string, { title: string, load: () => Promise<void> }>} */
+const Sections = {
+  dashboard: { title: "Dashboard",          load: loadDashboard },
+  devices:   { title: "Dispositivos",       load: loadDevices   },
+  mappings:  { title: "Mapeamentos Visuais",load: loadMappings  },
+  simulate:  { title: "Simular Evento",     load: loadSimulate  },
+  sensors:   { title: "Sensores de Entrada",load: loadSensors   },
+  commands:  { title: "Comandos Offline",   load: loadCommands  },
+  logs:      { title: "Histórico de Alertas",load: loadLogs     },
+  profiles:  { title: "Perfis de Acessibilidade",load:loadProfiles},
+};
+
+/**
+ * Navigate to a section.
+ * @param {string} sectionId
+ */
+function navigateTo(sectionId) {
+  const sec = Sections[sectionId];
+  if (!sec) return;
+  State.currentSection = sectionId;
+
+  // Update sections
+  document.querySelectorAll(".section").forEach(el => el.classList.remove("active"));
+  const target = document.getElementById(`sec-${sectionId}`);
+  if (target) target.classList.add("active");
+
+  // Update nav
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    const isActive = /** @type {HTMLElement} */ (btn).dataset.section === sectionId;
+    btn.classList.toggle("active", isActive);
+    btn.setAttribute("aria-current", isActive ? "page" : "false");
+  });
+
+  // Update page title
+  /** @type {HTMLElement} */ (document.getElementById("page-heading")).textContent = sec.title;
+
+  sec.load();
+}
+
+// ══════════════════════════════════════════
+// EVENT BINDINGS (zero inline handlers)
+// ══════════════════════════════════════════
+document.addEventListener("DOMContentLoaded", () => {
+
+  // ── Nav buttons ──
+  document.querySelectorAll(".nav-btn[data-section]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const section = /** @type {HTMLElement} */ (btn).dataset.section;
+      if (section) navigateTo(section);
+    });
+  });
+
+  // ── Dashboard text links (goto) ──
+  document.querySelectorAll("[data-goto]").forEach(el => {
+    el.addEventListener("click", () => {
+      const target = /** @type {HTMLElement} */ (el).dataset.goto;
+      if (target) navigateTo(target);
+    });
+  });
+
+  // ── Alert chip → logs ──
+  document.getElementById("alert-chip")?.addEventListener("click", () => navigateTo("logs"));
+
+  // ── Refresh button ──
+  document.getElementById("refresh-btn")?.addEventListener("click", () => {
+    const sec = Sections[State.currentSection];
+    if (sec) {
+      sec.load();
+      ToastSystem.show("Dados atualizados.", "success");
+    }
+  });
+
+  // ── Bulk device controls ──
+  document.getElementById("btn-all-on")?.addEventListener("click", async () => {
+    for (const d of State.devices) await AppService.updateDevice(d.id_dispositivo, { estado: "ON" });
+    ToastSystem.show("Todos os dispositivos ligados.", "success", "Ação em massa");
+    loadDevices(); loadDashboard();
+  });
+
+  document.getElementById("btn-all-off")?.addEventListener("click", async () => {
+    for (const d of State.devices) await AppService.updateDevice(d.id_dispositivo, { estado: "OFF" });
+    ToastSystem.show("Todos os dispositivos desligados.", "info", "Ação em massa");
+    loadDevices(); loadDashboard();
+  });
+
+  // ── Color picker live preview ──
+  document.getElementById("pick-color")?.addEventListener("input", (e) => {
+    const val = /** @type {HTMLInputElement} */ (e.currentTarget).value.toUpperCase();
+    /** @type {HTMLElement} */ (document.getElementById("color-hex")).textContent = val;
+  });
+
+  // ── Add mapping ──
+  document.getElementById("btn-add-map")?.addEventListener("click", async () => {
+    const eventId  = Number(/** @type {HTMLSelectElement} */ (document.getElementById("sel-event")).value);
+    const deviceId = Number(/** @type {HTMLSelectElement} */ (document.getElementById("sel-device")).value);
+    const color    = /** @type {HTMLInputElement} */ (document.getElementById("pick-color")).value;
+    const pattern  = /** @type {HTMLSelectElement} */ (document.getElementById("sel-pattern")).value;
+    if (!eventId || !deviceId) return;
+    await AppService.createMapping({ id_evento: eventId, id_dispositivo: deviceId, cor_alerta: color, padrao_pisca: pattern });
+    ToastSystem.show("Mapeamento adicionado com sucesso.", "success");
+    loadMappings();
+  });
+
+  // ── Execute command (input) ──
+  document.getElementById("btn-exec-cmd")?.addEventListener("click", () => {
+    const phrase = (/** @type {HTMLInputElement} */ (document.getElementById("cmd-input")).value ?? "").trim();
+    if (phrase) execCommand(phrase);
+  });
+
+  document.getElementById("cmd-input")?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const phrase = (/** @type {HTMLInputElement} */ (e.currentTarget).value ?? "").trim();
+      if (phrase) execCommand(phrase);
+    }
+  });
+
+  // ── Resolve all logs ──
+  document.getElementById("btn-resolve-all")?.addEventListener("click", async () => {
+    await AppService.resolveAllLogs();
+    ToastSystem.show("Todos os alertas marcados como vistos.", "success");
+    loadLogs(); loadDashboard();
+  });
+
+  // ── Profile intensity slider ──
+  document.getElementById("profile-intensity")?.addEventListener("input", (e) => {
+    const val = /** @type {HTMLInputElement} */ (e.currentTarget).value;
+    /** @type {HTMLElement} */ (document.getElementById("intensity-val")).textContent = val;
+  });
+
+  // ── Create profile ──
+  document.getElementById("btn-create-profile")?.addEventListener("click", async () => {
+    const name      = (/** @type {HTMLInputElement} */ (document.getElementById("profile-name")).value ?? "").trim();
+    const intensity = Number(/** @type {HTMLInputElement} */ (document.getElementById("profile-intensity")).value);
+    const color     = /** @type {HTMLInputElement} */ (document.getElementById("profile-color")).value;
+    if (!name) { ToastSystem.show("Informe o nome do usuário.", "error"); return; }
+    await AppService.createProfile({ nome_usuario: name, intensidade_luz: intensity, cor_preferida: color });
+    ToastSystem.show(`Perfil de "${name}" criado.`, "success");
+    /** @type {HTMLInputElement} */ (document.getElementById("profile-name")).value = "";
+    loadProfiles();
+  });
+
+  // ── Bootstrap ──
+  loadDashboard();
+});
+</script>
+</body>
+</html>
